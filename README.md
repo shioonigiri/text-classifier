@@ -1,5 +1,7 @@
 # text-classifier
 
+![tests](https://github.com/shioonigiri/text-classifier/actions/workflows/tests.yml/badge.svg)
+
 メールやメモなどの文章から、**カテゴリ・期限・金額・必要な行動**を自動で抽出するツール。
 設計の詳細は [docs/design.md](docs/design.md)、評価の詳細は [results/](results/) を参照。
 
