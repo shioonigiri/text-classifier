@@ -29,11 +29,16 @@ def load_data(path: Path) -> list[dict]:
 
 
 def evaluate(rows: list[dict]) -> dict:
+    """v1（ルールベース）で予測して集計する。"""
+    return summarize(rows, [classify_text(row["text"])["category"] for row in rows])
+
+
+def summarize(rows: list[dict], predictions: list[str]) -> dict:
+    """正解ラベルと予測のリストから指標を集計する（v1/v2 共通）。"""
     confusion: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     wrong: list[dict] = []
     correct = 0
-    for row in rows:
-        predicted = classify_text(row["text"])["category"]
+    for row, predicted in zip(rows, predictions):
         confusion[row["category"]][predicted] += 1
         if predicted == row["category"]:
             correct += 1
@@ -60,9 +65,9 @@ def evaluate(rows: list[dict]) -> dict:
     }
 
 
-def to_markdown(result: dict, data_name: str) -> str:
+def to_markdown(result: dict, data_name: str, title: str = "v1 ルールベース") -> str:
     lines = [
-        f"# 評価結果 {date.today().isoformat()}（v1 ルールベース）",
+        f"# 評価結果 {date.today().isoformat()}（{title}）",
         "",
         f"- データ: {data_name}（{result['total']}件）",
         f"- 正解率: {result['accuracy']:.1%}（{result['correct']}/{result['total']}）",
