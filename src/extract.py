@@ -109,7 +109,25 @@ def extract_deadline(text: str, today: date | None = None) -> str | None:
     return dates[0][1]
 
 
+# 行動を求める表現（直後にこれがある動詞を「必要な行動」とみなす）
+REQUEST_MARKERS = ("ください", "お願い", "必要です", "いただく", "頂く")
+
+
 def extract_action(text: str) -> str | None:
-    """必要な行動を抽出する。見つからなければ None。"""
-    # TODO: 実装（ステップ3でカテゴリ分類と合わせて調整）
-    return None
+    """必要な行動を抽出する。見つからなければ None。
+
+    ルール:
+    - 動詞パターンの出現を候補とし、「ください・お願い」等の依頼表現が
+      直後（12文字以内）にある候補を優先する
+    - 同点なら文中で早いものを採用する
+    """
+    candidates: list[tuple[int, int, str]] = []
+    for pattern, label in ACTION_PATTERNS.items():
+        for m in re.finditer(re.escape(pattern), text):
+            tail = text[m.end():m.end() + 12]
+            score = 2 if any(marker in tail for marker in REQUEST_MARKERS) else 1
+            candidates.append((score, m.start(), label))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda c: (-c[0], c[1]))
+    return candidates[0][2]

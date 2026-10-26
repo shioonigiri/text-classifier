@@ -57,6 +57,32 @@ def test_deadline_invalid_date():
     assert extract_deadline("期限は13月40日です。", today=TODAY) is None
 
 
-# --- 行動（ステップ3で実装） ---
-def test_action_not_implemented_yet():
-    assert extract_action("期日までに応募してください。") is None
+# --- 行動 ---
+def test_action_oubo():
+    assert extract_action("期日までに応募してください。") == "応募"
+
+
+def test_action_teishutsu():
+    assert extract_action("レポートの提出をお願いします。") == "提出"
+
+
+def test_action_sanka_touroku():
+    assert extract_action("参加登録はこちらから行ってください。") == "参加登録"
+
+
+def test_action_henshin():
+    assert extract_action("お早めに返信をお願いいたします。") == "返信"
+
+
+def test_action_furikomimi():
+    assert extract_action("指定の口座へお振込みください。") == "支払い"
+
+
+def test_action_prefers_requested_verb():
+    # 依頼表現（ください）が付いた方を優先する
+    text = "申込書を提出し、参加費を支払ってください。"
+    assert extract_action(text) == "支払い"
+
+
+def test_action_none():
+    assert extract_action("説明会のご案内です。当日は各社の話を聞けます。") is None
