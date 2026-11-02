@@ -1,2 +1,4 @@
-scikit-learn>=1.5
-pytest>=8
+scikit-learn==1.9.1
+sudachipy==0.7.0
+sudachidict-core==20261015
+pytest==9.1.1
